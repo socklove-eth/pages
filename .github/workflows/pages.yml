@@ -1,0 +1,224 @@
+# Checks that the pages are self-contained and that the build is reproducible
+# (same CID twice, and the same CID from kubo). Actions are pinned to commit
+# SHAs: tags are mutable.
+name: pages
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # No cache anywhere: a restored cache could reach bytes that get pinned.
+  build:
+    name: build and reproduce
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        # Don't leave the token in .git/config for later steps.
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      # package.json requires npm 12; upgrade outside the checkout so devEngines allows it.
+      - name: npm 12
+        working-directory: ${{ runner.temp }}
+        run: npm install --global --ignore-scripts npm@12.2.0 # zizmor: ignore[adhoc-packages]
+
+      # The lockfile is a build input.
+      - run: npm ci
+
+      # npm ci installs the lockfile as it stands; the cooldown must hold for it too.
+      - run: node scripts/age.mjs 7
+
+      - run: npm run lint
+      - run: npm run lint:unused
+      - run: npm run typecheck
+      - run: npm test
+
+      # Also runs the self-containment audit.
+      - run: npm run build
+
+      - name: the CID is a function of the source
+        run: |
+          before=$(node scripts/cid.mjs dist/altar dist/sigil)
+          rm -rf build dist
+          npm run build >/dev/null
+          after=$(node scripts/cid.mjs dist/altar dist/sigil)
+          if [ "$before" != "$after" ]; then
+            echo "the same source built two different pages:"
+            echo "$before"
+            echo "$after"
+            exit 1
+          fi
+          {
+            echo '### CIDs'
+            echo
+            echo '```'
+            echo "$after"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # An independent implementation must agree, and export what gets pinned.
+      - name: kubo builds the same CIDs, and the CARs to pin
+        env:
+          KUBO: v0.43.1
+          KUBO_SHA512: ff53b2428794fc8cca39505d28c15b4cceaef4b90a09284f291f611fcdc8c06399690575fc89cbd4d85ef71f3652581296c6f2e710386f887c8edf36b6e89d71
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/kubo.tgz" "https://github.com/ipfs/kubo/releases/download/$KUBO/kubo_${KUBO}_linux-amd64.tar.gz"
+          echo "$KUBO_SHA512  $RUNNER_TEMP/kubo.tgz" | sha512sum -c -
+          tar xzf "$RUNNER_TEMP/kubo.tgz" -C "$RUNNER_TEMP"
+          ipfs="$RUNNER_TEMP/kubo/ipfs"
+          export IPFS_PATH="$RUNNER_TEMP/repo"
+          "$ipfs" init --profile unixfs-v1-2025 >/dev/null
+          mkdir -p car
+          fail=0
+          for page in altar sigil; do
+            ours=$(node scripts/cid.mjs "dist/$page" | awk '{print $1}')
+            theirs=$("$ipfs" add -Q -r "dist/$page")
+            if [ "$ours" = "$theirs" ]; then echo "ok    $page  $ours"; else echo "DIFF  $page  $ours  kubo: $theirs"; fail=1; fi
+            "$ipfs" dag export "$theirs" > "car/$page.car"
+          done
+          exit $fail
+
+      # The release record lives in the organisation's .github repository,
+      # under the same tag, which is pushed first.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          repository: socklove-eth/.github
+          ref: ${{ github.ref_name }}
+          path: release
+          sparse-checkout: RELEASE.md
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: the tag records the CIDs the tag builds
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          fail=0
+          for page in altar sigil; do
+            cid=$(node scripts/cid.mjs "dist/$page" | awk '{print $1}')
+            if grep -qF "$cid" release/RELEASE.md; then
+              echo "ok    $page  $cid"
+            else
+              echo "MISS  $page  $cid  not in RELEASE.md"
+              fail=1
+            fi
+          done
+          exit $fail
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pages-${{ github.sha }}
+          path: |
+            dist/
+            car/
+          retention-days: 14
+
+  # Needs only anvil: contract artifacts are vendored in localnet/artifacts/.
+  chain:
+    name: harnesses and browser tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      # package.json requires npm 12; upgrade outside the checkout so devEngines allows it.
+      - name: npm 12
+        working-directory: ${{ runner.temp }}
+        run: npm install --global --ignore-scripts npm@12.2.0 # zizmor: ignore[adhoc-packages]
+
+      - run: npm ci
+      - run: node scripts/age.mjs 7
+
+      # Both test scripts build first.
+      - run: npm run test:harness
+
+      - run: npx playwright install --with-deps chromium firefox
+
+      - run: npm run test:e2e
+
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-${{ github.sha }}
+          path: test-results/
+          retention-days: 7
+
+  # Weekly, against the live chain: what the local chain copies must still be
+  # what Ethereum runs, and the Safe must still be configured as the page expects.
+  fork:
+    name: fork parity
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      # package.json requires npm 12; upgrade outside the checkout so devEngines allows it.
+      - name: npm 12
+        working-directory: ${{ runner.temp }}
+        run: npm install --global --ignore-scripts npm@12.2.0 # zizmor: ignore[adhoc-packages]
+
+      - run: npm ci
+      - run: node scripts/age.mjs 7
+
+      # Forks from the first baked endpoint, so no endpoint is written here.
+      - name: fork Ethereum and check it
+        run: |
+          fork_url=$(node --input-type=module -e "import { rpcUrls } from './scripts/env.mjs'; console.log(rpcUrls('.')[0])")
+          anvil --silent --port 8548 --fork-url "$fork_url" &
+          for _ in $(seq 60); do
+            cast chain-id --rpc-url http://127.0.0.1:8548 >/dev/null 2>&1 && break
+            sleep 1
+          done
+          npm run test:fork
+
+  zizmor:
+    name: workflow audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Findings fail the job instead of uploading SARIF, so no extra permission.
+      - uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
+        with:
+          advanced-security: false
+          persona: auditor

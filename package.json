@@ -1,0 +1,52 @@
+{
+  "name": "socklove-pages",
+  "private": true,
+  "version": "1.0.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --dev --serve",
+    "preview": "node build.mjs --serve",
+    "typecheck": "tsc -b",
+    "lint": "oxlint src scripts localnet e2e build.mjs shell.test.ts light marks playwright.config.ts vite.config.ts vitest.config.ts",
+    "lint:unused": "knip",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:harness": "npm run build && node localnet/all.mjs",
+    "test:e2e": "npm run build && playwright test",
+    "test:all": "npm run lint && npm run lint:unused && npm run typecheck && npm run test && npm run test:harness && npm run test:e2e",
+    "test:fork": "node localnet/fork-check.mjs",
+    "localnet": "node localnet/altar-stage.mjs",
+    "localnet:serve": "node localnet/lan.mjs"
+  },
+  "dependencies": {
+    "qr": "0.7.2",
+    "viem": "2.57.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.0",
+    "@types/node": "26.6.4",
+    "blockstore-core": "7.0.1",
+    "ipfs-unixfs-importer": "17.1.1",
+    "jsdom": "30.1.2",
+    "knip": "6.40.0",
+    "oxlint": "1.87.0",
+    "oxlint-tsgolint": "7.0.2003",
+    "typescript": "7.0.2",
+    "vite": "8.3.4",
+    "vitest": "5.0.3"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=26",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "npm",
+      "version": ">=12",
+      "onFail": "error"
+    }
+  }
+}

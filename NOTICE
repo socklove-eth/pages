@@ -1,0 +1,43 @@
+SockLove Pages
+
+Copyright SockLove.
+
+SockLove's own code in this repository is licensed under the MIT License in
+LICENSE. LICENSE does not cover the following, which keep their own terms.
+REUSE.toml records the same for every file, with each licence in LICENSES/.
+
+Reserved
+  logo.png, favicon.png
+    The SockLove logo and favicon, reserved as marks. See TRADEMARKS.md in
+    the .github repository.
+
+Third-party material in this repository
+  fonts/cinzel-latin.woff2, fonts/outfit-latin.woff2
+    Subsets of Cinzel, Copyright 2020 The Cinzel Project Authors, and Outfit,
+    Copyright 2021 The Outfit Project Authors. SIL Open Font License 1.1, in
+    fonts/OFL.txt.
+  localnet/artifacts/safe/
+    Safe 1.4.1 contract build artifacts, unmodified, from
+    @safe-global/safe-contracts 1.4.1 (npm, integrity
+    sha512-fP1jewywSwsIniM04NsqPyVRFKPMAuirC3ftA/TA4X3Zc5EnwQp/UCJUU2PL/37/z/jMo8UUaJ+pnFNWmMU7dQ==),
+    build/artifacts/contracts/. GNU Lesser General Public License 3.0, in
+    localnet/artifacts/safe/COPYING.LESSER, the package's LICENSE, with the
+    GNU General Public License 3.0 it extends in
+    localnet/artifacts/safe/COPYING.
+    Test fixtures only; never part of a built Page.
+  localnet/artifacts/ens/
+    Three ENS contracts, Copyright 2018 True Names Limited:
+    ENSRegistryWithFallback and PublicResolver (MIT License), and the original
+    ENS registry (BSD 2-Clause License). Each *.code file is the contract's
+    runtime code as Ethereum returns it from eth_getCode. deployments/ holds
+    two Ethereum deployment files, unmodified, from
+    @ensdomains/ens-contracts 1.7.0 (npm, integrity
+    sha512-B5S7CzWGx0RYyseBkIBQRclZLTWjXaRAtNbP7+Pwvt/Xh9P7jCXlRbyu/6gydwdxFqQfRVM8EVD3R6bj0zRAqw==),
+    deployments/mainnet/; their ENSRegistry is the fallback registry. Test
+    fixtures only; never part of a built Page.
+
+Third-party packages bundled into a built Page
+  Every built Page ends with the full licence text of each package its bundle
+  carries. For Altar: viem, ox, abitype, @noble/curves and @noble/hashes (MIT),
+  and qr (MIT OR Apache-2.0, used under MIT). Sigil is one file, its script
+  inline. Both carry the fonts' licence above.

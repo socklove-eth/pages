@@ -1,0 +1,170 @@
+/* The Light: how SockLove is lit. Every SockLove surface carries this file byte
+   for byte, and lights itself with nothing else. It lights; it never places:
+   where a thing stands is the surface's own. A rule names a meaning, never a
+   colour, and darkens or brightens it with color-mix(); no colour is added. */
+
+/* ===== THE LIGHT ===== Ten colours, each one meaning. */
+:root {
+  --night: #000;      /* the ground everything stands on (the night every scene is set in) */
+  --ink: #bbb;        /* words, unless another colour says more (the ink the words are written in) */
+  --spark: #FFF5EA;   /* what must be seen exactly: read, compared, taken (sparks) */
+  --candle: #FFB547;  /* warmth around an act, never the act (candlelight, and gold) */
+  --heart: #FF3355;   /* an act that binds (the burning heart) */
+  --flame: #FF2ECF;   /* that act, close at hand (its flames) */
+  --bond: #B45CFF;    /* what only two can do as one, and the act that joins them (the sock, where red meets blue) */
+  --crossing: #3D9BFF; /* going, choosing, and where you are (the blue sock across the breach) */
+  --seal: #6FD3FF;    /* what is done: taken, kept, confirmed (the seal) */
+  --thorn: #FF7A59;   /* a refusal, and nothing lost (the roses' thorn) */
+
+  /* The candlelight, through the heart and its flame, into the bond, to the crossing. */
+  --spectrum: linear-gradient(90deg, var(--candle), var(--heart), var(--flame), var(--bond), var(--crossing));
+}
+
+/* ===== VOICES ===== Names are carved, words are spoken, hashes are cipher. */
+:root {
+  --carved: 'Cinzel', 'Georgia', serif;
+  --spoken: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --cipher: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* ===== THE NIGHT ===== What is chosen glows with candlelight. */
+::selection { background: color-mix(in srgb, var(--candle) 30%, transparent); color: var(--spark); }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--night); }
+::-webkit-scrollbar-thumb { background: var(--candle); border-radius: 3px; }
+
+/* ===== STEPS ===== Any press (a step), at least 44px tall for a finger. A
+   press that binds burns with the heart (a vow); a press that goes or chooses
+   is a way. */
+.step {
+  display: inline-block;
+  padding: 16px 40px;
+  font-family: var(--spoken);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  border: 1px solid;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.5s;
+}
+.step:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.vow {
+  color: var(--heart);
+  border-color: color-mix(in srgb, var(--heart) 40%, transparent);
+}
+.vow:hover,
+.vow:focus-visible {
+  outline: none;
+  color: var(--flame);
+  border-color: color-mix(in srgb, var(--heart) 70%, transparent);
+  box-shadow: 0 0 30px color-mix(in srgb, var(--heart) 20%, transparent), 0 0 50px color-mix(in srgb, var(--candle) 10%, transparent);
+}
+
+.way {
+  color: var(--crossing);
+  border-color: color-mix(in srgb, var(--crossing) 30%, transparent);
+}
+.way:hover,
+.way:focus-visible {
+  outline: none;
+  color: color-mix(in srgb, var(--crossing) 60%, var(--spark));
+  background: color-mix(in srgb, var(--crossing) 5%, transparent);
+  border-color: color-mix(in srgb, var(--crossing) 50%, transparent);
+  box-shadow: 0 0 30px color-mix(in srgb, var(--crossing) 15%, transparent);
+}
+
+/* Equal choices, side by side, read in order (every way as wide as the
+   next). */
+.crossroads {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 150px);
+  justify-content: center;
+  gap: 14px;
+}
+.crossroads .step { padding-left: 0; padding-right: 0; text-align: center; }
+
+/* ===== QUILLS ===== Where a hand writes (a quill). It glows with the crossing
+   while it writes; writing refused is pricked by the thorn for a moment, and
+   pricked comes last, so the thorn shows over the glow. */
+.quill {
+  width: 100%;
+  padding: 14px 18px;
+  background: color-mix(in srgb, color-mix(in srgb, var(--ink) 6%, var(--night)) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--candle) 15%, transparent);
+  border-radius: 8px;
+  color: var(--spark);
+  font-family: var(--cipher);
+  font-size: 13px;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+}
+.quill::placeholder { color: color-mix(in srgb, color-mix(in srgb, var(--ink) 65%, var(--night)) 40%, transparent); }
+.quill:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--crossing) 40%, transparent);
+  background: color-mix(in srgb, color-mix(in srgb, var(--ink) 6%, var(--night)) 80%, transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--crossing) 12%, transparent);
+}
+.quill.pricked {
+  border-color: var(--thorn);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--thorn) 25%, transparent);
+}
+/* Under 16px a phone zooms in on the quill. */
+@media (pointer: coarse) {
+  .quill { font-size: 16px; }
+}
+
+/* ===== INSCRIPTIONS ===== What is read and taken, exactly (an inscription):
+   its mark ⧉ always shows, at a fixed width so nothing shifts; taken, it is
+   sealed ✓. */
+.inscription {
+  display: inline-block;
+  max-width: 100%;
+  font-family: var(--cipher);
+  font-size: 11px;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--ink) 65%, var(--night));
+  word-break: break-all;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.inscription::after {
+  content: '⧉';
+  display: inline-block;
+  width: 1em;
+  margin-left: 0.5em;
+  text-align: center;
+  color: var(--spark);
+  font-size: 1.3em;
+  line-height: 1;
+  vertical-align: -0.12em;
+}
+.inscription:hover,
+.inscription:focus-visible,
+.inscription.sealed { color: var(--spark); }
+.inscription:focus-visible { outline: 1px solid color-mix(in srgb, var(--crossing) 50%, transparent); outline-offset: 3px; }
+.inscription.sealed::after { content: '✓'; color: var(--seal); }
+
+/* ===== THE THORN AND THE BOND ===== A word that refuses (a thorn), and a word
+   of what two did as one (a bond). */
+.thorn {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+  color: var(--thorn);
+}
+.bond { color: var(--bond); }
+
+/* ===== STILLNESS ===== For eyes that ask the Light not to move. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

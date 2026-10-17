@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <meta name="referrer" content="no-referrer">
+
+    <!-- connect-src is broad on purpose: a user or the ENS text record may name
+         any RPC endpoint. Loopback serves a local chain. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src https: http://127.0.0.1:* http://localhost:*; base-uri 'none'; form-action 'none'; require-trusted-types-for 'script'; trusted-types 'none'">
+
+    <title>Altar — SockLove</title>
+    <meta name="description" content="Propose. Scan. Verify. Execute. 2-of-2.">
+    <meta property="og:title" content="Altar — SockLove">
+    <meta property="og:description" content="Propose. Scan. Verify. Execute. 2-of-2.">
+    <meta property="og:type" content="website">
+
+    <!--PAGE:FAVICON-->
+    <link rel="stylesheet" href="../../light/light.css">
+    <link rel="stylesheet" href="../../page.css">
+  </head>
+
+  <body>
+    <header class="page-header">
+      <img class="page-logo" src="../../logo.png" alt="SockLove">
+      <h1 class="page-title">Altar</h1>
+      <div class="page-rule"></div>
+      <p class="page-subtitle">Propose. Scan. Verify. Execute. 2-of-2.</p>
+    </header>
+
+    <main class="page-main">
+      <!-- Replaced by the script on start; visible only if JavaScript did not run. -->
+      <div class="panel" id="panel" aria-live="polite">
+        <p class="note">Nothing burns here without JavaScript.</p>
+      </div>
+    </main>
+
+    <footer class="page-footer">
+      <p class="page-tagline">Consent as Architecture</p>
+      <!-- Filled by the script with the RPC endpoint answering now. -->
+      <p class="page-notice"></p>
+    </footer>
+
+    <script>
+<!--PAGE:LOGIC-->
+    </script>
+  </body>
+</html>

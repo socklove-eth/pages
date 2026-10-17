@@ -1,0 +1,25 @@
+# Alerts only (PR limit 0): a bump changes the CID, so the owners apply
+# updates by cutting a release, and this repository takes no pull requests.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    cooldown:
+      default-days: 7
+    groups:
+      dev:
+        dependency-type: development
+      runtime:
+        dependency-type: production
+
+  # Actions are pinned to SHAs; nothing else tracks their updates.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    cooldown:
+      default-days: 7

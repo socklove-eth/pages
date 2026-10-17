@@ -1,0 +1,13 @@
+# Build and test output
+build/
+dist/
+test-results/
+e2e/.staged.json
+
+# Dependencies
+node_modules/
+.vitest/
+
+# Local overrides; the build refuses them too
+.env.local
+.env.*.local

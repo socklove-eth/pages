@@ -1,0 +1,4 @@
+The SockLove name, logo, favicon and Plate are reserved as marks. No licence is
+granted. An unmodified SockLove Page may be copied, pinned, mirrored and served,
+name, logo and favicon included. TRADEMARKS.md in the .github repository says
+the rest.

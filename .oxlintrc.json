@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "promise", "import"],
+  "categories": { "correctness": "error", "suspicious": "warn" },
+  "options": { "typeAware": true },
+  "ignorePatterns": ["dist", "build", "node_modules"],
+  "rules": {
+    "promise/always-return": "off",
+    "eslint/no-underscore-dangle": "off",
+    "import/no-unassigned-import": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "e2e/**"],
+      "rules": { "typescript/no-unsafe-type-assertion": "off" }
+    },
+    {
+      "files": ["localnet/**", "build.mjs", "scripts/**"],
+      "rules": { "typescript/restrict-template-expressions": "off" }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <meta name="referrer" content="no-referrer">
+
+    <!-- default-src 'none' also blocks connect-src, so a pasted hash cannot leave
+         the page. 'self' lets the unbuilt source load from disk; the build
+         removes it. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; base-uri 'none'; form-action 'none'; require-trusted-types-for 'script'; trusted-types 'none'">
+
+    <title>Sigil — SockLove</title>
+    <meta name="description" content="Ten marks. Two screens. One sigil.">
+    <meta property="og:title" content="Sigil — SockLove">
+    <meta property="og:description" content="Ten marks. Two screens. One sigil.">
+    <meta property="og:type" content="website">
+
+    <!--PAGE:FAVICON-->
+    <link rel="stylesheet" href="../../light/light.css">
+    <link rel="stylesheet" href="../../page.css">
+  </head>
+
+  <body>
+    <header class="page-header">
+      <img class="page-logo" src="../../logo.png" alt="SockLove">
+      <h1 class="page-title">Sigil</h1>
+      <div class="page-rule"></div>
+      <p class="page-subtitle">Ten marks. Two screens. One sigil.</p>
+    </header>
+
+    <main class="page-main">
+      <div class="panel">
+        <p class="lead intro fade-up">Say the 🧿 <strong>Marks</strong> aloud and sign only if both agree.</p>
+
+        <label class="sr" for="hash">Transaction hash</label>
+        <input id="hash" class="quill wide fade-up" type="text" spellcheck="false" autocomplete="off"
+               autocapitalize="off" autocorrect="off" placeholder="Insert transaction hash…">
+
+        <div id="out" class="marks" role="img" aria-label="No Marks" translate="no"></div>
+        <p id="spoken" class="sr" aria-live="polite" translate="no"></p>
+        <p id="msg" class="note" aria-live="polite"></p>
+      </div>
+    </main>
+
+    <footer class="page-footer">
+      <p class="page-tagline">Consent as Architecture</p>
+    </footer>
+
+    <script>
+<!--PAGE:LOGIC-->
+    </script>
+  </body>
+</html>

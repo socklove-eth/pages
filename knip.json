@@ -1,0 +1,24 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/altar/main.ts",
+    "src/sigil/main.ts",
+    "localnet/*.mjs",
+    "scripts/*.mjs",
+    "e2e/*.spec.ts",
+    "e2e/global-*.ts",
+    "**/*.test.ts"
+  ],
+  "project": [
+    "src/**/*.ts",
+    "marks/*.ts",
+    "localnet/**/*.mjs",
+    "scripts/**/*.mjs",
+    "e2e/**/*.ts",
+    "*.mjs",
+    "*.ts"
+  ],
+  "ignoreBinaries": [
+    "anvil"
+  ]
+}

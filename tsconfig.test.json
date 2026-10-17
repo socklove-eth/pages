@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "node"
+    ],
+    "allowJs": true
+  },
+  "include": [
+    "src/**/*.test.ts",
+    "scripts/**/*.test.ts",
+    "localnet/*.test.ts",
+    "light/*.test.ts",
+    "marks/*.test.ts",
+    "*.test.ts",
+    "e2e",
+    "*.config.ts"
+  ]
+}
